@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Markers</title>
+    <style>
+		html, body { height: 100%; margin: 0; padding: 0; }
+		#map { height: 100%; margin: 0; padding: 0; }
+		#inputBox { position: fixed; bottom: 0.2em; left: 0.2em; margin: 0; padding: 0; }
+		#inputBox > textarea { height: 200px; width: 200px; margin: 0; padding: 0; }
+		#inputBox > button { height: 40px; width: 100%; margin: 0; padding: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+	<div id="inputBox">
+		<textarea id="inputText"></textarea><br/>
+		<button onClick="plotMarkers();">PLOT</button>
+	</div>
+
+    <script>
+		var map, plotted = [], flightPaths = [];
+		function initMap() {
+			map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 4,
+					// maxZoom: 15,
+					center: {
+						lat: 50,
+						lng: 20
+					},
+					mapTypeId: 'terrain'
+				});
+		}
+
+		function plotMarkers(text) {
+			var markers = [];
+			var polyLine = [];
+			var bounds = new google.maps.LatLngBounds();
+
+			plotted.forEach(function(marker) {
+				marker.setMap(null);
+			});
+
+			flightPaths.forEach(function(pl) {
+				pl.setMap(null);
+			});
+
+			var text = document.getElementById('inputText').value;
+			if(text === '') {
+				console.log('Empty');
+			}
+			else {
+				var text = text.split('\n');
+
+				text.forEach(function(str) {
+					var str = str.replace(/[^0-9,\. ]/g, '');
+					// console.log(str);
+
+
+					if(/(\d+\.\d+,\d+\.\d+,\d )+/.test(str)) {
+						// console.log('Match ' + (new Error).lineNumber + ' ' + str);
+						var str = str.replace(/(\d+\.\d+),(\d+\.\d+),\d\s*/g,'{"lat":$2, "lng":$1},');
+						// console.log(str);
+						str = '[' + str.substring(0, str.length - 1) + ']';
+						// console.log(str);
+						polyLine.push(JSON.parse(str));
+
+					}
+					else if(/(\d+\.\d+,\d+\.\d+ )+/.test(str)) {
+						// console.log('Match ' + (new Error).lineNumber + ' ' + str);
+						var str = str.replace(/(\d+\.\d+),(\d+\.\d+)\s*/g,'{"lat":$2, "lng":$1},');
+						// console.log(str);
+						str = '[' + str.substring(0, str.length - 1) + ']';
+						// console.log(str);
+						polyLine.push(JSON.parse(str));
+					}
+					else if(/\d+\.\d+,*\s*\d+\.\d+/.test(str)) {
+						// console.log('Match ' + (new Error).lineNumber);
+						// console.log(str.replace(/(\d+\.\d+),*\s*(\d+\.\d+)/,'{"lat":$1, "lng":$2}'));
+						markers.push(str.replace(/(\d+\.\d+),*\s*(\d+\.\d+)/,'{"lat":$1, "lng":$2}'));
+						// ll = ll.split();
+					}
+					else if(/\d+,\d+\s*\d+\,\d+/.test(str)) {
+						// console.log('Match ' + (new Error).lineNumber);
+						// console.log(str.replace(/(\d+),(\d+)\s*(\d+)\,(\d+)/, '{"lat":$1.$2, "lng":$3.$4}'));
+						markers.push(str.replace(/(\d+),(\d+)\s*(\d+)\,(\d+)/,'{"lat":$1.$2, "lng":$3.$4}'));
+					}
+					else {
+						console.log('No match ' + str);
+						// ll = false;
+					}
+
+					polyLine.forEach(function(i) {
+						i.forEach(function(j) {
+							bounds.extend(j);
+						});
+					});
+				});
+			}
+
+
+			markers.forEach(function (i,j) {
+				i = JSON.parse(i);
+				bounds.extend(i);
+
+				plotted[j] = new google.maps.Marker({
+						position: i,
+						map: map,
+						title: i.lat + ', ' + i.lng
+					});
+			});
+
+
+			polyLine.forEach(function(i,j) {
+				console.log(i);
+
+				flightPaths[j] = new google.maps.Polyline({
+					path: i,
+					geodesic: true,
+					strokeColor: '#FF0000',
+					strokeOpacity: 0.5,
+					strokeWeight: 5,
+					map: map
+		        });
+			})
+
+			map.fitBounds(bounds);
+		}
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+    </script>
+  </body>
+</html>
+
