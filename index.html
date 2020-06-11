@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<meta charset="utf-8">
+	<title>Markers</title>
+	<script type="text/javascript" src='mapbox//mapbox-gl.js'></script>
+	<link href='mapbox//mapbox-gl.css' rel='stylesheet' type="text/css"/>
+	<script type="text/javascript" src="mapbox/mapbox-gl-geocoder.min.js"></script>
+	<link rel="stylesheet" href="mapbox/mapbox-gl-geocoder.css" type="text/css" />
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		#map {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		#inputBox {
+			position: absolute;
+			bottom: 1.3em;
+			right: 0;
+			width: 200px;
+		}
+
+		#inputBox>textarea {
+			height: 200px;
+			width: 200px;
+		}
+
+		#inputBox>button {
+			height: 40px;
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div id='map'></div>
+	<div id="inputBox">
+		<textarea id="textArea"></textarea>
+		<button onclick="plot()">Plot</button>
+	</div>
+</body>
+<script type="text/javascript" src="customscript.js"></script>
+
+</html>
