@@ -1,6 +1,6 @@
 # plotOnMap
 Plot markers on map.
 
-## demo
+## Demo
 
-[https://github.com/ramromail/plotOnMap](https://github.com/ramromail/plotOnMap)
+[https://ramromail.github.io/plotOnMap/](https://ramromail.github.io/plotOnMap/)
